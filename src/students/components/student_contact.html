@@ -1,0 +1,109 @@
+<head>
+    <meta charset="UTF-8">
+    <title>Student Contact and Personal</title>
+    <link href="../../../../index.css" />
+    <link rel="stylesheet" href="./../../../../node_modules/bootstrap/dist/css/bootstrap.min.css" />
+    <script src='./../../../../node_modules/bootstrap/dist/js/bootstrap.min.js'></script>
+    <script src='./../../../../node_modules/jquery/dist/jquery.min.js'></script>
+</head>
+
+<body>
+  <div class="row" style="width: 900px;">
+        <div class="col-sm-4 text-center ">
+            <div class="text-left d-inline-block">
+              <button id="selectPicture" class="btn btn-success btn-sm btn-block my-3 align-left" type="button">Select
+                Picture</button>
+            </div>
+            <div class="text-right d-inline-block">
+              <button id="savePicture" class="btn btn-success btn-sm btn-block my-3" type="button">Save
+                Selection</button>
+            </div>
+            <img id="studentPicture" src="../../../assets/IMG_2476.JPG" alt="Please select a picutre!" class="border"
+              style="height:300px;">
+
+            <div class="text-center d-inline-block ">
+              <div class="mt-2 p-1 fw-bold border rounded" style="background-color: #D3D3D3; width: 14rem;">
+                <label>Status:</label>
+                <label>Active</label>
+              </div>
+              <div class="mt-2 p-1 fw-bold border rounded" style="background-color: #D3D3D3; width: 14rem;">
+                <label>Student #</label>
+                <label>99999</label>
+              </div>
+              <div class="mt-2 p-1 fw-bold border rounded" style="background-color: #D3D3D3; width: 14rem;">
+                <label>Since</label>
+                <label>01/01/1753</label>
+              </div>
+            </div>
+        </div>
+
+        <div class="col-sm-8 pt-3">
+
+          <div class="d-inline-block" style="width: 11rem;">
+            <label for="firstName">First Name</label>
+            <input type="text" class="form-control" id="firstName" placeholder="First Name" value="">
+            <div id='firstName_error'  class="col text-start text-danger"></div>
+          </div>
+          <div class="mb-3 ms-3 d-inline-block" style="width: 11rem;">
+            <label for="middleName">Middle Name</label>
+            <input type="text" class="form-control" id="middleName" placeholder="Middle Name" value="">
+            <div id='middleName_error'  class="col text-start text-danger"></div>
+          </div>
+          <div class="mb-3 ms-3 d-inline-block" style="width: 11rem;">
+            <label for="lastName">Last Name</label>
+            <input type="text" class="form-control" id="lastName" placeholder="Last Name" value="">
+            <div id='lastName_error'  class="col text-start text-danger"></div>
+          </div>
+
+          <div class="mb-3">
+            <label for="address">Address<span class="text-muted">(Optional)</span></label>
+            <input type="text" class="form-control" id="address" placeholder="1234 Main St" >
+            <div class="invalid-feedback">
+              Please enter your shipping address.
+            </div>
+          </div>
+      
+          <div class="mb-3">
+            <label for="address2">Address 2 <span class="text-muted">(Optional)</span></label>
+            <input type="text" class="form-control" id="address2" placeholder="Apartment or suite" >
+          </div>                
+      
+          <div class="mb-3">
+            <label for="city">City<span class="text-muted">(Optional)</span></label>
+            <input type="text" class="form-control" id="city" placeholder="City" >
+          </div>                
+          <div>
+            <div class="mb-3 w-25 d-inline-block">
+              <label for="homePhone">Phone<span class="text-muted">(Optional)</span></label>
+              <input type="phone" class="form-control" id="homePhone" placeholder="Phone" >
+            </div>                
+            <div class="mb-3 ms-3 w-50 d-inline-block">
+              <label for="email">E-Mail<span class="text-muted">(Optional)</span></label>
+              <input type="email" class="form-control" id="email" placeholder="E-Mail" >
+            </div>                
+          </div>     
+          <div>
+            <div class="mb-3 w-25 d-inline-block">
+              <label for="state">State<span class="text-muted">(Optional)</span></label>
+              <input type="text" class="form-control" id="state" placeholder="State" >
+            </div>                
+            <div class="mb-3 ms-3 w-25 d-inline-block">
+              <label for="zipCode">ZipCode<span class="text-muted">(Optional)</span></label>
+              <input type="text" class="form-control" id="zipCode" placeholder="ZipCode" >
+            </div>                
+            <div class="mb-3 ms-3 w-25 d-inline-block">
+              <label for="birthDate">Birth Date<span class="text-muted">(Optional)</span></label>
+              <input type="date" class="form-control" id="birthDate" placeholder="01/01/1753" >
+            </div>                
+          </div>     
+          
+          <div class="d-inline-block" style="margin-bottom: 1px;">
+            <button id="saveButton"   class="btn btn-success btn-sm ml-3" style="margin-bottom: 4px;" type="button" disabled>Save</button>
+            <button id="createButton" class="btn btn-success btn-sm ml-3" style="margin-bottom: 4px;" type="button">Create New</button>
+          </div>  
+          
+        </div>
+    </div>
+  </div>
+  <script src="../scripts/html/student_contact.js"></script>
+</body>

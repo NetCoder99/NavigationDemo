@@ -1,0 +1,35 @@
+.display_inline_block {
+  display: inline-block;
+}
+
+input:invalid {
+  border: 2px solid red;
+}
+
+input:valid {
+  border: 2px solid green;
+}
+
+.main_form {
+  background-color: #f2ffe6;
+}
+
+input::placeholder {
+  font-style: italic; /* Change to 'italic', 'normal', or 'oblique' */
+  opacity: 0.1;
+}
+
+.iframe_hidden {
+  display: none;
+}
+
+iframe {
+  display: block; /* Make the iframe a block-level element */
+  margin: 0 auto; /* Sets the left and right margins to auto, centering horizontally */
+  width: 900px; /*  Set a width (adjust as needed) */
+}
+
+.table tr {
+  cursor: pointer;
+  background-color: aliceblue;
+}
