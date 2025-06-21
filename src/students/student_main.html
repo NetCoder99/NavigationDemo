@@ -8,25 +8,45 @@
   <link rel="stylesheet" href="../../node_modules/bootstrap/dist/css/bootstrap.min.css" />
   <script src='../../node_modules/bootstrap/dist/js/bootstrap.min.js'></script>
   <script src='../../node_modules/jquery/dist/jquery.min.js'></script>
+  <script src="./scripts/student_html_navbar.js"></script>
+  <script src="./scripts/student_html_search.js"></script>
+  <script src="./scripts/student_html_contact.js"></script>
+  <script src="./scripts/student_html_create.js"></script>
 </head>
 
 <body>
-  <div class="container mx-auto" style="height: 960px; width: 1400px;">
+  <img src="../assets/rising-sun-martial-arts-logo.png" height="83px" width="523px" class="mx-auto d-block">
 
+  <div class="container mx-auto">
     <div class="text-center">
       <h1>Student Details</h1>
       <div id="StudentNavbarDiv"></div>
-      <div id="StudentSearchDiv"></div>
-      <div id="StudentTableDiv"></div>
+      <div id="StudentSearchDiv" ></div>
+      <div id="StudentContactDiv" class="iframe_hidden"></div>
+      <div id="StudentCreateDiv"  class="iframe_hidden"></div>
     </div>
+  </div>
+
+  <div class="overflow-auto mx-auto" style="max-width: 900px; max-height: 400px;">
+    <div id="StudentTableDiv" style="padding: 2rem;" ></div>
   </div>  
 
 <script>
   document.addEventListener("DOMContentLoaded", (event) => {
     console.log("DOM fully loaded and parsed");
-    $("#StudentNavbarDiv").load("./components/student_navbar.html");
-    $("#StudentSearchDiv").load("./components/student_search.html");
+    $("#StudentNavbarDiv").load("./components/student_navbar.html", function(response, status, xhr) {
+      initializeNavbar(response, status, xhr);
+    });
+    $("#StudentSearchDiv").load("./components/student_search.html", function(response, status, xhr) {
+      initializeStudentSearch(response, status, xhr);
+    });
     $("#StudentTableDiv").load("./components/student_table.html");
+    $("#StudentContactDiv").load("./components/student_contact.html", function(response, status, xhr) {
+      initializeStudentContact(response, status, xhr);
+    });
+    $("#StudentCreateDiv").load("./components/student_create.html", function(response, status, xhr) {
+      initializeStudentCreate(response, status, xhr);
+    });
   });
 </script>
 </body>

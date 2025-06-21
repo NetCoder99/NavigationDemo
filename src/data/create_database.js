@@ -17,9 +17,10 @@ console.log(`shared_folder: ${shared_folder}`)
 //   return new sqlite3.Database(db_directory + '/AttendanceV2.db');
 // }
 
-// function getSharedPath() {
-//   return shared_folder;
-// }
+//---------------------------------------------------------------
+function getSharedPath() {
+  return shared_folder;
+}
 
 //---------------------------------------------------------------
 function getDatabaseLocation() {
@@ -27,5 +28,5 @@ function getDatabaseLocation() {
   return dbFullPath;
 }
 
-module.exports = {getAttendanceDatabaseV2, getDatabaseLocation, getSharedPath};
+module.exports = {getDatabaseLocation, getSharedPath};
 

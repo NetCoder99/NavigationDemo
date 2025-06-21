@@ -113,9 +113,15 @@ const updateStudentStmt = `
   update students
   set    firstName   = :firstName,
          lastName    = :lastName,
+         address     = :address,
+         address2    = :address2,
+         city        = :city,
+         state       = :state,
          birthDate   = :birthDate,
          state       = :state,
-         zip         = :zip
+         zip         = :zip,
+         phoneHome   = :phoneHome,
+         email       = :email
   where  badgeNumber = :badgeNumber;        
 `
 function updateStudentData(studentData) {
@@ -131,9 +137,14 @@ function updateStudentData(studentData) {
         'firstName'   : studentData.firstName,
         'lastName'    : studentData.lastName,
         'birthDate'   : fmtDate,
-        'badgeNumber' : studentData.badgeNumber,
+        'address'     : studentData.address,
+        'address2'    : studentData.address2,
+        'city'        : studentData.city,
         'state'       : studentData.state,
         'zip'         : studentData.zipCode,
+        'phoneHome'   : studentData.phoneHome,
+        'email'       : studentData.email,
+        'badgeNumber' : studentData.badgeNumber,
     });
     db.close();
   } catch (err) {
@@ -219,11 +230,61 @@ function insertStudent(studentData) {
   } 
 }
 
+
+const lastRankSearch = `
+  with cte_last_checkin as (
+    select a2.badgeNumber, 
+          max(a2.checkinDateTime) as checkinDateTime,
+          s2.firstName,
+          s2.lastName 
+    from        attendance a2 
+    left   join students   s2
+      on   a2.badgeNumber = s2.badgeNumber 
+    group  by a2.badgeNumber 
+  )
+  select c1.badgeNumber,
+        c1.checkinDateTime,
+        a1.badgeNumber,
+        a1.rankName,
+        c1.firstName,
+        c1.lastName
+  from   cte_last_checkin c1
+  left   join  attendance a1  
+    on   c1.badgeNumber     = a1.badgeNumber
+    and  c1.checkinDateTime = a1.checkinDateTime
+`;
+
+// ----------------------------------------------------------------------------------------------
+const countStudentsByNameStmt = `
+  SELECT  count(*) as rowCount
+  FROM   students
+  where  lower(lastName)   = :lastName
+  and    lower(firstName)  = :firstName
+`
+function countStudentsByName(searchData) {
+  try {
+    const db_directory = getDatabaseLocation();
+    const db           = new sqlite3(db_directory); 
+    const searchStmt   = db.prepare(countStudentsByNameStmt);
+    searchParms = {
+      'lastName'  : searchData.lastName.toLowerCase(),
+      'firstName' : searchData.firstName.toLowerCase(),
+    }
+    const rows         = searchStmt.get(searchParms);
+    db.close();
+    return rows.rowCount;
+  } catch (err) {
+    console.error('Error searching by by badge', err); throw err; 
+  } 
+}
+
+
 module.exports = {
   searchStudentData, 
   searchStudentDataByName,
   savePictureData, 
   updateStudentData, 
   getNewBadgeNumber,
+  countStudentsByName,
   insertStudent
 }
