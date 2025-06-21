@@ -7,10 +7,52 @@ document.addEventListener("DOMContentLoaded", function(event) {
 function initializeStudentContact(response, status, xhr) {
   console.log(`initializeStudentContact - invoked: ${JSON.stringify(status)}`);
   document.getElementById('saveButton').addEventListener('click',(event)=>{processSaveButton(event);});
-  //document.getElementById('createButton').addEventListener('click',(event)=>{processCreateButton(event);});
+  document.getElementById('selectUpdatePicture').addEventListener('click',(event)=>{processSelectPictureUpdate(event);});
+  document.getElementById('saveUpdatePicture').addEventListener('click',(event)=>{processSavePictureUpdate(event);});
 };
 
 clickCounter = 0;
+//-------------------------------------------------------------------
+function processSelectPictureUpdate(event) {
+  console.log(`processSelectPictureUpdate: ${clickCounter++} times.`);
+  saveResultsMessage = document.getElementById('saveResultsMessage');
+  saveResultsMessage.innerHTML = 'Selecting picture ...';
+  saveResultsMessage.className = '';
+  saveResultsMessage.classList.add('ms-2', 'fw-bold', 'text-warning');  
+  window.electronAPI.selectPicture();
+}
+// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+window.electronAPI.selectPictureResult((result) => {
+  console.log(`selectPictureResult : student update : was activated`);
+  const filePath     = result.image_path;
+  document.getElementById('imageUpdateName').innerHTML = result.image_path;
+  studentPicture     = document.getElementById('studentUpdatePicture');
+  studentPicture.src = `data:image/jpg;base64,${result.image_string}`;
+  saveResultsMessage = document.getElementById('saveResultsMessage');
+  saveResultsMessage.innerHTML = `Picture was selected: ${filePath}.`;
+  saveResultsMessage.className = '';
+  saveResultsMessage.classList.add('ms-2', 'fw-bold', 'text-success');  
+})
+
+//-------------------------------------------------------------------
+function processSavePictureUpdate(event) {
+  console.log(`processSavePictureUpdate: ${clickCounter++} times.`);
+  saveResultsMessage = document.getElementById('saveResultsMessage');
+  saveResultsMessage.innerHTML = "Updating student picture ...";
+  saveResultsMessage.className = '';
+  saveResultsMessage.classList.add('ms-2');
+  saveResultsMessage.classList.add('fw-bold');
+  DisableInputForm(true);
+  const imagePath   = document.getElementById('imageUpdateName').innerHTML;
+  const studentData = GetAllFieldValues();
+  studentData.imagePath = imagePath;
+  window.electronAPI.savePicture(studentData);
+}
+// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+window.electronAPI.savePictureResult((result) => {
+  console.log(`selectPictureResult was activated`);
+})
+
 //-------------------------------------------------------------------
 function processSaveButton(event) {
   console.log(`processSaveButton: ${clickCounter++} times.`);
@@ -53,13 +95,6 @@ function DisplaySaveResults(result) {
     saveResultsMessage.classList.add('text-success');
   }
 
-}
-
-//-------------------------------------------------------------------
-function processCreateButton(event) {
-  console.log(`processCreateButton: ${clickCounter++} times.`);
-  const allFieldValues = GetAllFieldValues();
-  window.electronAPI.createNewStudent(allFieldValues);
 }
 
 //-------------------------------------------------------------------

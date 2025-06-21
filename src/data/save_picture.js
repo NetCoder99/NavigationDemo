@@ -28,10 +28,10 @@ async function savePictureByBadge(studentView, badgeData) {
     return;      
   }
 
-  const resizeImagePath         = path.join(rootPath, 'src', 'pages', 'students', 'scripts', 'functions', 'scale_image.js');
+  const resizeImagePath         = path.join(rootPath, 'src', 'data', 'scale_image.js');
   const {scaleImageToHeight}    = require(resizeImagePath);
   console.log(`savePictureByBadge: saving picture`);
-  const resizedImage = await scaleImageToHeight(badgeData.picturePath, null, 300) ;
+  const resizedImage = await scaleImageToHeight(badgeData.imagePath, null, 300) ;
   const base64String = Buffer.from(resizedImage).toString('base64');
   imageBytes  = null;
   pictureData = {

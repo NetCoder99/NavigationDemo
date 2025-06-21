@@ -49,8 +49,37 @@ function createStudentsWindow(show_devTools = false) {
   })  
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  
+  const resizeImagePath      = path.join(rootPath, 'src', 'data', 'scale_image.js');
+  const {scaleImageToHeight} = require(resizeImagePath);
+  ipcMain.on('selectPicture', (event) => {
+    console.log(`selectPicture was clicked`);
+    dialog.showOpenDialog({ properties: ['openFile'] })
+    .then(result => selectPictureSelectionResult(result))
+    .catch(err => console.log(err));
+  });
+  async function selectPictureSelectionResult(selectPictureResult) {
+    console.log(`selectPictureSelectionResult: ${selectPictureResult.filePaths[0]}`)
+    if (selectPictureResult.canceled) {
+      return;
+    }
+    const resizedImage = await scaleImageToHeight(selectPictureResult.filePaths[0], null, 300) ;
+    const base64String = Buffer.from(resizedImage).toString('base64');
+    const parsedPath = path.parse(selectPictureResult.filePaths[0]);
+    const imageDetails = {
+      'image_name'   : parsedPath.base, 
+      'image_path'   : selectPictureResult.filePaths[0], 
+      'image_string' : base64String
+    }
+    studentView.webContents.send('selectPictureResult', imageDetails);
+  };
 
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  const saveImagePath         = path.join(rootPath, 'src', 'data', 'save_picture.js');
+  const {savePictureByBadge}  = require(saveImagePath);
+  ipcMain.on('savePicture', (event, studentData) => {
+    console.log(`savePicture was clicked: ${JSON.stringify(studentData)}`);
+    savePictureByBadge(studentView, studentData);
+  })  
 
   return studentView;
 }  

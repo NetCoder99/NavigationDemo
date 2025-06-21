@@ -13,30 +13,19 @@ function validateStudentDataCreate(studentData) {
   }
   studentCount = studentProcsPathObj.countStudentsByName(searchData);
   if (studentCount > 0) {
-    return {'status': 'err', 'msg' : 'Student data found for first and last name!'};
+    return {'status': 'err', 'msg' : 'Student data was found for first and last name!'};
   }
 
+  firstNameValid = isNameFieldValid(studentData.firstName, "First name");
+  lastNameValid  = isNameFieldValid(studentData.lastName, "Last name");
+  birthDateValid = isBirthDateValid(studentData.birthDate, "Birth date");
 
-  initValidation = {
-    'validationStatus' : {},
-    'badgeNumber': isBadgeNumberValid(studentData.badgeNumber),
-    'firstName'  : isNameFieldValid(studentData.firstName, "First name"),
-    'lastName'   : isNameFieldValid(studentData.lastName,  "Last name"),
-    'birthDate'  : isBirthDateValid(studentData.birthDate,  "Birth date"),
-  };
-  if (initValidation.firstName.status === 'err') {
-    initValidation.validationStatus = {'status': 'err', 'msg' : initValidation.firstName.msg, 'fieldName' : 'firstName'};
-  }
-  else if (initValidation.lastName.status === 'err') {
-    initValidation.validationStatus = {'status': 'err', 'msg' : initValidation.lastName.msg, 'fieldName' : 'lastName'};
-  }
-  else if (initValidation.birthDate.status === 'err') {
-    initValidation.validationStatus = {'status': 'err', 'msg' : initValidation.birthDate.msg, 'fieldName' : 'birthDate'};
-  }
-  else {
-    initValidation.validationStatus = {'status': 'ok', 'msg' : "Student Data was ok"};
-  }
-  return initValidation;
+  if (firstNameValid.status == 'err')  {return {'status': 'err', 'msg' : 'First name is required!'};}
+  if (lastNameValid.status  == 'err')  {return {'status': 'err', 'msg' : 'Last name is required!'};}
+  if (birthDateValid.status == 'err')  {return {'status': 'err', 'msg' : 'Birth date is required!'};}
+
+  return {'status': 'ok', 'msg' : ''};
+
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

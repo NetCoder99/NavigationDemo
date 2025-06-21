@@ -6,26 +6,55 @@ document.addEventListener("DOMContentLoaded", function(event) {
 //-------------------------------------------------------------------
 function initializeStudentCreate(response, status, xhr) {
   console.log(`initializeStudentCreate - invoked: ${JSON.stringify(status)}`);
-  document.getElementById('saveButton').addEventListener('click',(event)=>{processSaveButton(event);});
+  document.getElementById('createButton').addEventListener('click',(event)=>{processCreateButton(event);});
+  document.getElementById('selectCreatePicture').addEventListener('click',(event)=>{processSelectPictureCreate(event);});
+  document.getElementById('saveCreatePicture').addEventListener('click',(event)=>{processSavePictureCreate(event);});
 };
 
 clickCounter = 0;
 //-------------------------------------------------------------------
-function processSaveButton(event) {
-  console.log(`processSaveButton: ${clickCounter++} times.`);
-  saveResultsMessage = document.getElementById('saveResultsMessage');
-  saveResultsMessage.innerHTML = "Updating student details ...";
-  saveResultsMessage.className = '';
-  saveResultsMessage.classList.add('ms-2');
-  saveResultsMessage.classList.add('fw-bold');
-  DisableInputForm(true);
-  window.electronAPI.saveStudentData(GetAllFieldValues());
+function processSelectPictureCreate(event) {
+  console.log(`processSelectPictureCreate: ${clickCounter++} times.`);
+  createResultsMessage = document.getElementById('createResultsMessage');
+  createResultsMessage.innerHTML = 'Selecting picture ...';
+  createResultsMessage.className = '';
+  createResultsMessage.classList.add('ms-2', 'fw-bold', 'text-warning');  
+  window.electronAPI.selectPicture();
 }
+// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+window.electronAPI.selectPictureResult((result) => {
+  console.log(`selectPictureResult was activated`);
+  const filePath     = result.file_path;
+  studentPicture     = document.getElementById('studentCreatePicture');
+  studentPicture.src = `data:image/jpg;base64,${result.image_string}`;
+  createResultsMessage = document.getElementById('createResultsMessage');
+  createResultsMessage.innerHTML = `Picture was selected: ${filePath}.`;
+  createResultsMessage.className = '';
+  createResultsMessage.classList.add('ms-2', 'fw-bold', 'text-success');  
+})
+
+//-------------------------------------------------------------------
+function processSavePictureCreate(event) {
+  console.log(`processSavePictureCreate: ${clickCounter++} times.`);
+}
+// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+window.electronAPI.savePictureResult((result) => {
+  console.log(`selectPictureResult was activated`);
+})
+
+//-------------------------------------------------------------------
+function processCreateButton(event) {
+  console.log(`processCreateButton: ${clickCounter++} times.`);
+  const allFieldValues = GetAllCreateFieldValues();
+  DisableCreateInputForm(true);
+  window.electronAPI.createNewStudent(allFieldValues);
+}
+
 //-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
-function DisableInputForm(enableFlag) {
-  document.getElementById('saveButton').disabled = enableFlag;
+function DisableCreateInputForm(enableFlag) {
+  document.getElementById('createButton').disabled = enableFlag;
   //document.getElementById('createButton').disabled = enableFlag;
-  const allFields = GetAllFields();
+  const allFields = GetAllCreateFields();
   for (let key in allFields) {
       console.log(`${key}: ${allFields[key].id}`);
       if (allFields[key].id.startsWith('inp')) {
@@ -33,43 +62,30 @@ function DisableInputForm(enableFlag) {
       }
   }
 }
+
 //-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
-window.electronAPI.saveStudentDataResult((result) => {
-  console.log(`saveStudentDataResult : ${JSON.stringify(result)}`);
-  DisplaySaveResults(result);
+window.electronAPI.createNewStudentResult((result) => {
+  console.log(`createNewStudentResult : ${JSON.stringify(result)}`);
+  DisplayCreateResults(result);
 })
-function DisplaySaveResults(result) {
-  DisableInputForm(false);
-  saveResultsMessage = document.getElementById('saveResultsMessage');
-  saveResultsMessage.innerHTML = result.msg;
-  saveResultsMessage.className = '';
-  saveResultsMessage.classList.add('ms-2');
-  saveResultsMessage.classList.add('fw-bold');
+function DisplayCreateResults(result) {
+  DisableCreateInputForm(false);
+  createResultsMessage = document.getElementById('createResultsMessage');
+  createResultsMessage.innerHTML = result.msg;
+  createResultsMessage.className = '';
+  createResultsMessage.classList.add('ms-2');
+  createResultsMessage.classList.add('fw-bold');
   if (result.status == 'err') {
-    saveResultsMessage.classList.add('text-danger');
+    createResultsMessage.classList.add('text-danger');
   }
   else {
-    saveResultsMessage.classList.add('text-success');
+    createResultsMessage.classList.add('text-success');
   }
-
 }
 
-//-------------------------------------------------------------------
-function processCreateButton(event) {
-  console.log(`processCreateButton: ${clickCounter++} times.`);
-  const allFieldValues = GetAllFieldValues();
-  window.electronAPI.createNewStudent(allFieldValues);
-}
 
 //-------------------------------------------------------------------
-window.electronAPI.searchByBadgeResult((result) => {
-  console.log(`searchByBadgeResult : StudentContact was activated`);
-  document.getElementById('saveResultsMessage').innerHTML = "Waiting for input...";
-  DisplayStudentData(result.studentData);
-})
-
-//-------------------------------------------------------------------
-function DisplayStudentData(studentData) {
+function DisplayCreateStudentData(studentData) {
   const allFields = GetAllFields();
   allFields.badgeNumberLbl.innerHTML = studentData.badgeNumber;
   allFields.memberSinceLbl.innerHTML = studentData.memberSince;
@@ -86,38 +102,40 @@ function DisplayStudentData(studentData) {
   allFields.email.value = studentData.email;
 }
 //-------------------------------------------------------------------
-function GetAllFieldValues() {
+function GetAllCreateFieldValues() {
+  const createForm = document.getElementById('frmCreate');
   return {
-    'badgeNumber' : document.getElementById('badgeNumberLbl').innerHTML,
-    'memberSince' : document.getElementById('memberSinceLbl').innerHTML,
-    'firstName' : document.getElementById('inpFirstName').value,
-    'lastName'  : document.getElementById('inpLastName').value,
-    'address'   : document.getElementById('inpAddress').value,
-    'address2'  : document.getElementById('inpAddress2').value,
-    'city'      : document.getElementById('inpCity').value,
-    'state'     : document.getElementById('inpState').value,
-    'zipCode'   : document.getElementById('inpZipCode').value,
-    'birthDate' : document.getElementById('inpBirthDate').value,
-    'phoneHome' : document.getElementById('inpPhoneHome').value,
-    'email'     : document.getElementById('inpEmail').value,    
+    'badgeNumber' : createForm.querySelector('#badgeNumberLbl').innerHTML,
+    'memberSince' : createForm.querySelector('#memberSinceLbl').innerHTML,
+    'firstName' : createForm.querySelector('#inpFirstName').value,
+    'lastName'  : createForm.querySelector('#inpLastName').value,
+    'address'   : createForm.querySelector('#inpAddress').value,
+    'address2'  : createForm.querySelector('#inpAddress2').value,
+    'city'      : createForm.querySelector('#inpCity').value,
+    'state'     : createForm.querySelector('#inpState').value,
+    'zipCode'   : createForm.querySelector('#inpZipCode').value,
+    'birthDate' : createForm.querySelector('#inpBirthDate').value,
+    'phoneHome' : createForm.querySelector('#inpPhoneHome').value,
+    'email'     : createForm.querySelector('#inpEmail').value,    
   }
 }
 
 //-------------------------------------------------------------------
-function GetAllFields() {
+function GetAllCreateFields() {
+  const createForm = document.getElementById('frmCreate');
   return {
-    'badgeNumberLbl' : document.getElementById('badgeNumberLbl'),
-    'memberSinceLbl' : document.getElementById('memberSinceLbl'),
-    'firstName' : document.getElementById('inpFirstName'),
-    'lastName'  : document.getElementById('inpLastName'),
-    'address'   : document.getElementById('inpAddress'),
-    'address2'  : document.getElementById('inpAddress2'),
-    'city'      : document.getElementById('inpCity'),
-    'state'     : document.getElementById('inpState'),
-    'zipCode'   : document.getElementById('inpZipCode'),
-    'birthDate' : document.getElementById('inpBirthDate'),
-    'phoneHome' : document.getElementById('inpPhoneHome'),
-    'email'     : document.getElementById('inpEmail'),
+    'badgeNumberLbl' : createForm.querySelector('#badgeNumberLbl'),
+    'memberSinceLbl' : createForm.querySelector('#memberSinceLbl'),
+    'firstName' : createForm.querySelector('#inpFirstName'),
+    'lastName'  : createForm.querySelector('#inpLastName'),
+    'address'   : createForm.querySelector('#inpAddress'),
+    'address2'  : createForm.querySelector('#inpAddress2'),
+    'city'      : createForm.querySelector('#inpCity'),
+    'state'     : createForm.querySelector('#inpState'),
+    'zipCode'   : createForm.querySelector('#inpZipCode'),
+    'birthDate' : createForm.querySelector('#inpBirthDate'),
+    'phoneHome' : createForm.querySelector('#inpPhoneHome'),
+    'email'     : createForm.querySelector('#inpEmail'),
   }
 }
 

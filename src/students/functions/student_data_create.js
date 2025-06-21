@@ -16,21 +16,19 @@ function createNewStudent(studentView, studentData) {
   try {
     createValidResults = validateStudentObj.validateStudentDataCreate(studentData);
     if (createValidResults.status == 'err') {
-      studentView.webContents.send('saveStudentDataResult', createValidResults);
+      studentView.webContents.send('createNewStudentResult', createValidResults);
       return;
     }
 
-    inputValidResults = validateStudentObj.validateStudentData(studentData);
-    if (inputValidResults.validationStatus.status === 'err') {
-      studentView.webContents.send('saveStudentDataResult', inputValidResults.validationStatus);
-      return;
-    }
-    //badgeNumber = getNewBadgeNumber();
-    studentData.badgeNumber = getNewBadgeNumber().badgeNumber;
+    const badgeNumber = getNewBadgeNumber().badgeNumber;
+    studentData.badgeNumber = badgeNumber;
     insertStudent(studentData);
+    
+    results = {'status': 'ok', 'msg' : 'Student record has been added', 'studentData': studentData}
+    setTimeout(() => {
+      studentView.webContents.send('createNewStudentResult', results);
+    }, 1000);  
 
-    result = {'status': 'ok', 'msg' : 'Student record has been added', 'studentData': studentData}
-    studentView.webContents.send('saveStudentDataResult', result);
   } catch(err) {
     console.log(`searchStudentData failed: ${JSON.stringify(studentData)}`);
     result = {'status': 'err', 'msg' : err.toString()}
