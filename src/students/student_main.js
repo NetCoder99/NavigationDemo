@@ -1,7 +1,8 @@
 const {WebContentsView, ipcMain, dialog } = require('electron/main') 
-const appRoot  = require('app-root-path');
-const path     = require('node:path')  
-const rootPath = appRoot.path;
+const PDFWindow = require('electron-pdf-window');
+const appRoot   = require('app-root-path');
+const path      = require('node:path')  
+const rootPath  = appRoot.path;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function createStudentsWindow(show_devTools = false) {  
@@ -22,6 +23,10 @@ function createStudentsWindow(show_devTools = false) {
   const {searchByNameFunction}  = require(studentSearchPath);
   const {searchByBadgeFunction} = require(studentSearchPath);
 
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  const commonAssetsProcsPath   = path.join(rootPath, 'src', 'common', 'image_procs');
+  const {SaveCommonAssets}      = require(commonAssetsProcsPath);
+  SaveCommonAssets();
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   ipcMain.on('searchByName', (event, searchData) => {
@@ -51,8 +56,8 @@ function createStudentsWindow(show_devTools = false) {
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   const resizeImagePath      = path.join(rootPath, 'src', 'data', 'scale_image.js');
   const {scaleImageToHeight} = require(resizeImagePath);
-  ipcMain.on('selectPicture', (event) => {
-    console.log(`selectPicture was clicked`);
+  ipcMain.on('selectPicture', (event, source) => {
+    console.log(`selectPicture was clicked from: ${source}`);
     dialog.showOpenDialog({ properties: ['openFile'] })
     .then(result => selectPictureSelectionResult(result))
     .catch(err => console.log(err));
@@ -80,6 +85,39 @@ function createStudentsWindow(show_devTools = false) {
     console.log(`savePicture was clicked: ${JSON.stringify(studentData)}`);
     savePictureByBadge(studentView, studentData);
   })  
+
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  const badgeProcsSubPath      = path.join(rootPath, 'src', 'badge');
+  const {generateBarcodeImage} = require(path.join(badgeProcsSubPath, 'barcode_generator'));
+  const {createBadgePdf}       = require(path.join(badgeProcsSubPath, 'badge_generator'));
+  const {getBadgeData}         = require(path.join(badgeProcsSubPath, 'badge_data'));
+  ipcMain.on('createBadge', (event, badgeData) => {
+    console.log(`createBadge was clicked: ${JSON.stringify(badgeData)}`);
+    generateBarcodeImage(badgeData.badgeNumber);
+    const genBadgeData = getBadgeData(badgeData.badgeNumber);
+    console.log(`genBadgeData: ${JSON.stringify(genBadgeData)}`);
+    createBadgePdf(genBadgeData, badgeGenerateComplete);
+  })  
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  function badgeGenerateComplete(pdfOutputPath) {
+    console.log(`badgeGenerateComplete`);
+    const pdfWindow = new PDFWindow({
+      width: 1200,
+      height: 800,
+      webPreferences: { }
+    });
+    pdfWindow.loadFile(pdfOutputPath);
+  }
+// // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// function createAndDisplayBadgeWindow () {
+//   const pdfWindow = new PDFWindow({
+//     width: 1200,
+//     height: 800,
+//     webPreferences: { }
+//   });
+//   pdfPath = appRoot + '/output/test_file2.pdf';
+//   pdfWindow.loadFile(pdfPath);
+// }
 
   return studentView;
 }  

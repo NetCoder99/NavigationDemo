@@ -19,7 +19,7 @@ function processSelectPictureCreate(event) {
   createResultsMessage.innerHTML = 'Selecting picture ...';
   createResultsMessage.className = '';
   createResultsMessage.classList.add('ms-2', 'fw-bold', 'text-warning');  
-  window.electronAPI.selectPicture();
+  window.electronAPI.selectPicture('create');
 }
 // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 window.electronAPI.selectPictureResult((result) => {
@@ -33,14 +33,14 @@ window.electronAPI.selectPictureResult((result) => {
   createResultsMessage.classList.add('ms-2', 'fw-bold', 'text-success');  
 })
 
-//-------------------------------------------------------------------
-function processSavePictureCreate(event) {
-  console.log(`processSavePictureCreate: ${clickCounter++} times.`);
-}
-// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
-window.electronAPI.savePictureResult((result) => {
-  console.log(`selectPictureResult was activated`);
-})
+// //-------------------------------------------------------------------
+// function processSavePictureCreate(event) {
+//   console.log(`processSavePictureCreate: ${clickCounter++} times.`);
+// }
+// // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+// window.electronAPI.savePictureResult((result) => {
+//   console.log(`selectPictureResult was activated`);
+// })
 
 //-------------------------------------------------------------------
 function processCreateButton(event) {
@@ -56,7 +56,7 @@ function DisableCreateInputForm(enableFlag) {
   //document.getElementById('createButton').disabled = enableFlag;
   const allFields = GetAllCreateFields();
   for (let key in allFields) {
-      console.log(`${key}: ${allFields[key].id}`);
+      //console.log(`${key}: ${allFields[key].id}`);
       if (allFields[key].id.startsWith('inp')) {
         allFields[key].disabled = enableFlag;
       }
@@ -100,6 +100,7 @@ function DisplayCreateStudentData(studentData) {
   allFields.birthDate.value = FormatDateDisplay(studentData.birthDate);
   allFields.phoneHome.value = studentData.phoneHome;
   allFields.email.value = studentData.email;
+  allFields.studentPicture.src = `data:image/jpg;base64,${studentData.imageBase64}`;
 }
 //-------------------------------------------------------------------
 function GetAllCreateFieldValues() {
@@ -136,6 +137,7 @@ function GetAllCreateFields() {
     'birthDate' : createForm.querySelector('#inpBirthDate'),
     'phoneHome' : createForm.querySelector('#inpPhoneHome'),
     'email'     : createForm.querySelector('#inpEmail'),
+    'studentPicture' : document.getElementById('studentCreatePicture')    
   }
 }
 

@@ -7,11 +7,24 @@ document.addEventListener("DOMContentLoaded", function(event) {
 function initializeStudentContact(response, status, xhr) {
   console.log(`initializeStudentContact - invoked: ${JSON.stringify(status)}`);
   document.getElementById('saveButton').addEventListener('click',(event)=>{processSaveButton(event);});
+  document.getElementById('createBadge').addEventListener('click',(event)=>{processcreateBadge(event);});
   document.getElementById('selectUpdatePicture').addEventListener('click',(event)=>{processSelectPictureUpdate(event);});
   document.getElementById('saveUpdatePicture').addEventListener('click',(event)=>{processSavePictureUpdate(event);});
 };
 
 clickCounter = 0;
+//-------------------------------------------------------------------
+function processcreateBadge(event) {
+  console.log(`processcreateBadge: ${clickCounter++} times.`);
+  const badgeData = {'badgeNumber':GetAllFieldValues().badgeNumber};
+  saveResultsMessage = document.getElementById('saveResultsMessage');
+  saveResultsMessage.innerHTML = "Generating student badge ...";
+  saveResultsMessage.className = '';
+  saveResultsMessage.classList.add('ms-2', 'fw-bold', 'text-success');
+//  DisableInputForm(true);
+  window.electronAPI.createBadge(badgeData);
+}  
+
 //-------------------------------------------------------------------
 function processSelectPictureUpdate(event) {
   console.log(`processSelectPictureUpdate: ${clickCounter++} times.`);
@@ -19,7 +32,7 @@ function processSelectPictureUpdate(event) {
   saveResultsMessage.innerHTML = 'Selecting picture ...';
   saveResultsMessage.className = '';
   saveResultsMessage.classList.add('ms-2', 'fw-bold', 'text-warning');  
-  window.electronAPI.selectPicture();
+  window.electronAPI.selectPicture('update');
 }
 // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 window.electronAPI.selectPictureResult((result) => {
@@ -32,6 +45,7 @@ window.electronAPI.selectPictureResult((result) => {
   saveResultsMessage.innerHTML = `Picture was selected: ${filePath}.`;
   saveResultsMessage.className = '';
   saveResultsMessage.classList.add('ms-2', 'fw-bold', 'text-success');  
+  DisableInputForm(false);
 })
 
 //-------------------------------------------------------------------
@@ -51,6 +65,12 @@ function processSavePictureUpdate(event) {
 // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
 window.electronAPI.savePictureResult((result) => {
   console.log(`selectPictureResult was activated`);
+  saveResultsMessage = document.getElementById('saveResultsMessage');
+  saveResultsMessage.innerHTML = "Student picture was updated.";
+  saveResultsMessage.className = '';
+  saveResultsMessage.classList.add('ms-2');
+  saveResultsMessage.classList.add('fw-bold', 'text-success');
+  DisableInputForm(false);
 })
 
 //-------------------------------------------------------------------
@@ -70,7 +90,7 @@ function DisableInputForm(enableFlag) {
   //document.getElementById('createButton').disabled = enableFlag;
   const allFields = GetAllFields();
   for (let key in allFields) {
-      console.log(`${key}: ${allFields[key].id}`);
+      //console.log(`${key}: ${allFields[key].id}`);
       if (allFields[key].id.startsWith('inp')) {
         allFields[key].disabled = enableFlag;
       }
@@ -120,6 +140,8 @@ function DisplayStudentData(studentData) {
   allFields.birthDate.value = FormatDateDisplay(studentData.birthDate);
   allFields.phoneHome.value = studentData.phoneHome;
   allFields.email.value = studentData.email;
+  allFields.studentPicture.src = `data:image/jpg;base64,${studentData.imageBase64}`;
+
 }
 //-------------------------------------------------------------------
 function GetAllFieldValues() {
@@ -154,6 +176,7 @@ function GetAllFields() {
     'birthDate' : document.getElementById('inpBirthDate'),
     'phoneHome' : document.getElementById('inpPhoneHome'),
     'email'     : document.getElementById('inpEmail'),
+    'studentPicture' : document.getElementById('studentUpdatePicture')    
   }
 }
 
