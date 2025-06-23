@@ -17,8 +17,9 @@ function createStudentsWindow(show_devTools = false) {
   studentView.webContents.loadFile(studentViewPath);
   studentView.setVisible(true);
 
-  studentView.webContents.openDevTools();
+  //studentView.webContents.openDevTools();
 
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   const studentSearchPath       = path.join(rootPath, 'src', 'students', 'functions', 'student_data_search.js');
   const {searchByNameFunction}  = require(studentSearchPath);
   const {searchByBadgeFunction} = require(studentSearchPath);
@@ -27,6 +28,11 @@ function createStudentsWindow(show_devTools = false) {
   const commonAssetsProcsPath   = path.join(rootPath, 'src', 'common', 'image_procs');
   const {SaveCommonAssets}      = require(commonAssetsProcsPath);
   SaveCommonAssets();
+
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  const updTablesPath           = path.join(rootPath, 'src', 'data', 'alter_database');
+  const {updAttendanceDatabase_20250623}      = require(updTablesPath);
+  updAttendanceDatabase_20250623();
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   ipcMain.on('searchByName', (event, searchData) => {
@@ -95,7 +101,7 @@ function createStudentsWindow(show_devTools = false) {
     console.log(`createBadge was clicked: ${JSON.stringify(badgeData)}`);
     generateBarcodeImage(badgeData.badgeNumber);
     const genBadgeData = getBadgeData(badgeData.badgeNumber);
-    console.log(`genBadgeData: ${JSON.stringify(genBadgeData)}`);
+    //console.log(`genBadgeData: ${JSON.stringify(genBadgeData)}`);
     createBadgePdf(genBadgeData, badgeGenerateComplete);
   })  
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

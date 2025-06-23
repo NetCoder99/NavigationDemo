@@ -28,5 +28,6 @@ function getDatabaseLocation() {
   return dbFullPath;
 }
 
+
 module.exports = {getDatabaseLocation, getSharedPath};
 
