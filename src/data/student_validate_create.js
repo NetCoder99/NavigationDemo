@@ -13,18 +13,38 @@ function validateStudentDataCreate(studentData) {
   }
   studentCount = studentProcsPathObj.countStudentsByName(searchData);
   if (studentCount > 0) {
-    return {'status': 'err', 'msg' : 'Student data was found for first and last name!'};
+    studentValidateResults = {
+      'overall'   : {'status': 'err', 'msg' : 'Student already exists!'},
+      'firstName' : {'status': 'err', 'msg' : 'Student already exists!'},
+      'lastName'  : {'status': 'err', 'msg' : 'Student already exists!'},
+    };
+    return studentValidateResults;
   }
 
-  firstNameValid = isNameFieldValid(studentData.firstName, "First name");
-  lastNameValid  = isNameFieldValid(studentData.lastName, "Last name");
-  birthDateValid = isBirthDateValid(studentData.birthDate, "Birth date");
+  firstNameValid = isNameFieldValid(studentData.firstName,  "First name");
+  lastNameValid  = isNameFieldValid(studentData.lastName,   "Last name");
+  birthDateValid = isBirthDateValid(studentData.birthDate,  "Birth date");
 
-  if (firstNameValid.status == 'err')  {return {'status': 'err', 'msg' : 'First name is required!'};}
-  if (lastNameValid.status  == 'err')  {return {'status': 'err', 'msg' : 'Last name is required!'};}
-  if (birthDateValid.status == 'err')  {return {'status': 'err', 'msg' : 'Birth date is required!'};}
+  studentValidateResults = {
+    'firstName' : isNameFieldValid(studentData.firstName, "First name"),
+    'lastName'  : isNameFieldValid(studentData.lastName,  "Last name"),
+    'birthDate' : isBirthDateValid(studentData.birthDate, "Birth date") 
+  }
 
-  return {'status': 'ok', 'msg' : ''};
+  if (isOkToUpdate(studentValidateResults)) {
+    studentValidateResults['overall'] = {'status': 'ok', 'msg' : 'Student is ok!'}
+  }
+  else {
+    studentValidateResults['overall'] = {'status': 'err', 'msg' : 'Student data not valid!'}
+  }
+
+  return studentValidateResults;
+
+  // if (firstNameValid.status == 'err')  {return {'status': 'err', 'msg' : 'First name is required!'};}
+  // if (lastNameValid.status  == 'err')  {return {'status': 'err', 'msg' : 'Last name is required!'};}
+  // if (birthDateValid.status == 'err')  {return {'status': 'err', 'msg' : 'Birth date is required!'};}
+
+  // return {'status': 'ok', 'msg' : ''};
 
 }
 
@@ -45,10 +65,12 @@ function isBadgeNumberValid(badgeNumber) {
   }
 }
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function isInteger(value) {
   return /^\d+$/.test(value);
 }
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function isNameFieldValid(inpField, fieldName) {
   if (inpField == null || (typeof inpField === 'string' && inpField.trim().length === 0)) {
     return {'status': 'err', 'msg' : `${fieldName} is required`};
@@ -58,6 +80,7 @@ function isNameFieldValid(inpField, fieldName) {
   }
 }
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function isBirthDateValid(inpField, fieldName) {
   if (inpField == null || (typeof inpField === 'string' && inpField.trim().length === 0)) {
     return {'status': 'err', 'msg' : `${fieldName} is required`};

@@ -1,23 +1,18 @@
 const { app, BaseWindow, ipcMain } = require('electron')
 const env = process.env.NODE_ENV || 'development';
 const appRoot = require('app-root-path');
-const path = require('path')
+const path    = require('path')
 
 // ----------------------------------------------------------------------
 const {createStudentsWindow}    = require(appRoot + '/src/students/student_main');
 
-// // ----------------------------------------------------------------------
-// global.sharedObject = {
-//   someProperty: 'default value'
-// };
-
-// // ----------------------------------------------------------------------
-// if (env === 'development') {
-//   require('electron-reload')(__dirname, {
-//       electron: path.join(__dirname, 'node_modules', '.bin', 'electron'),
-//       hardResetMethod: 'exit'
-//   });
-// }
+// // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// try {
+//   const commonAssetsProcsPath   = path.join(appRoot.path, 'src', 'common', 'image_procs');
+//   const {SaveCommonAssets}      = require(commonAssetsProcsPath);
+//   SaveCommonAssets();
+// }  
+// catch(err) {console.log(err)}
 
 // ----------------------------------------------------------------------
 app.whenReady().then( () => {

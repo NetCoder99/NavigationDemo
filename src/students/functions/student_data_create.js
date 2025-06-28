@@ -15,7 +15,7 @@ const {insertStudent}         = require(studentProcsPath);
 function createNewStudent(studentView, studentData) {
   try {
     createValidResults = validateStudentObj.validateStudentDataCreate(studentData);
-    if (createValidResults.status == 'err') {
+    if (createValidResults.overall.status == 'err') {
       studentView.webContents.send('createNewStudentResult', createValidResults);
       return;
     }
@@ -32,7 +32,7 @@ function createNewStudent(studentView, studentData) {
   } catch(err) {
     console.log(`searchStudentData failed: ${JSON.stringify(studentData)}`);
     result = {'status': 'err', 'msg' : err.toString()}
-    studentView.webContents.send('saveStudentDataResult', result);
+    studentView.webContents.send('createNewStudentResult', result);
     return;
   }
 }

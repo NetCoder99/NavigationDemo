@@ -29,7 +29,7 @@
     </div>
 
     <div class="col-sm-8 pt-3">
-      
+      <h5 id="studentTitle">Creating new student record.</h5>
       <div class="col d-flex justify-content-start">
         <div class="d-inline-block text-start" style="width: 11rem;">
           <label for="firstName">First Name</label>
@@ -85,10 +85,17 @@
           <input type="email" class="form-control form-control-sm" id="inpEmail" placeholder="E-Mail">
         </div>
     </div>
-    <div class=" text-start">
+    <div id="createButtons"  class="text-start">
       <div class="d-inline-block" style="margin-bottom: 1px;">
         <button id="createButton" class="btn btn-success btn-sm ml-3" style="margin-bottom: 4px;" type="button">Create</button>
         <label id="createResultsMessage"></label>
+      </div>
+    </div>
+    <div id="saveButtons" class="text-start iframe_hidden">
+      <div class="d-inline-block" style="margin-bottom: 1px;">
+        <button id="saveButton"  class="btn btn-success btn-sm ml-3" style="margin-bottom: 4px;" type="button">Save</button>
+        <button id="createBadge" class="btn btn-success btn-sm ml-3" style="margin-bottom: 4px;" type="button">Create Badge</button>
+        <label id="saveResultsMessage"></label>
       </div>
     </div>
 

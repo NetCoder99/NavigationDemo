@@ -3,6 +3,14 @@ document.addEventListener("DOMContentLoaded", function(event) {
   console.log(`DOMContentLoaded - Student Search snippet was loaded`);
 });
 
+// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+window.electronAPI.navEventInvokedResult((result) => {
+  console.log(`navEventInvokedResult was activated`);
+  if (result.navButtonId == "navSearch") {
+    initializeStudentSearch(null, "success", null);
+  }
+})
+
 //-------------------------------------------------------------------
 function initializeStudentSearch(response, status, xhr) {
   console.log(`initializeStudentSearch - invoked: ${JSON.stringify(status)}`);

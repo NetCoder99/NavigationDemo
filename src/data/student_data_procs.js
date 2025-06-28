@@ -178,18 +178,32 @@ const insertStudentStmt = `
     ,'firstName'
     ,'middleName'
     ,'lastName'
+    ,'address'
+    ,'address2'
+    ,'city'
+    ,'state'
+    ,'zip'
+    ,'phoneHome'
+    ,'email'
     ,'birthDate'
     ,'badgeNumber'
     ,'state'
     ,'zip' 
     ,'memberSince'
-  )
+    )
   values 
   (
      :badgeNumber
     ,:firstName
     ,:middleName
     ,:lastName
+    ,:address
+    ,:address2
+    ,:city
+    ,:state
+    ,:zip
+    ,:phoneHome
+    ,:email
     ,:birthDate
     ,:badgeNumber
     ,:state
@@ -218,6 +232,13 @@ function insertStudent(studentData) {
         'firstName'   : studentData.firstName,
         'middleName'  : studentData.middleName,
         'lastName'    : studentData.lastName,
+        'address'     : studentData.address,
+        'address2'    : studentData.address2,
+        'city'        : studentData.city,
+        'state'       : studentData.state,
+        'zip'         : studentData.zip,
+        'phoneHome'   : studentData.phoneHome,
+        'email'       : studentData.email,
         'birthDate'   : fmtDate,
         'badgeNumber' : studentData.badgeNumber,
         'state'       : studentData.state,

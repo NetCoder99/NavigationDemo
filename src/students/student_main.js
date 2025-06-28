@@ -12,28 +12,47 @@ function createStudentsWindow(show_devTools = false) {
       preload: path.join(__dirname, 'student_preload.js')
     }     
   });
+
+  try {
+    let gbl_session = studentView.webContents.session;
+  } catch(err) {
+    console.log(`gbl_session failed: ${err}`);
+  }
+
+
   studentView.setBounds({ x: 10, y: 110, width: 1400, height: 960 });
   const studentViewPath = appRoot + '/src/students/student_main.html';
   studentView.webContents.loadFile(studentViewPath);
   studentView.setVisible(true);
 
-  //studentView.webContents.openDevTools();
+  studentView.webContents.openDevTools();
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   const studentSearchPath       = path.join(rootPath, 'src', 'students', 'functions', 'student_data_search.js');
   const {searchByNameFunction}  = require(studentSearchPath);
   const {searchByBadgeFunction} = require(studentSearchPath);
 
-  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  const commonAssetsProcsPath   = path.join(rootPath, 'src', 'common', 'image_procs');
-  const {SaveCommonAssets}      = require(commonAssetsProcsPath);
-  SaveCommonAssets();
+  // // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // const updTablesPath           = path.join(rootPath, 'src', 'data', 'alter_database');
+  // const {updAttendanceDatabase_20250623}      = require(updTablesPath);
+  // updAttendanceDatabase_20250623();
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  const updTablesPath           = path.join(rootPath, 'src', 'data', 'alter_database');
-  const {updAttendanceDatabase_20250623}      = require(updTablesPath);
-  updAttendanceDatabase_20250623();
+  const imageProcsPath    = path.join(rootPath, 'src', 'common', 'image_procs');
+  const {getAssetImage }  = require(imageProcsPath);
+  ipcMain.on('getDefaultImage', (event) => {
+    console.log(`getDefaultImage was clicked`);
+    const imageBase64 = getAssetImage('RSM_Logo1.jpg');
+    event.returnValue = imageBase64;
+  })  
 
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  ipcMain.on('navEventInvoked', (event, navEvent) => {
+    console.log(`navEventInvoked was clicked: ${JSON.stringify(navEvent)}`);
+    setTimeout(() => {
+      studentView.webContents.send('navEventInvokedResult', navEvent);
+    }, 100);      
+  })  
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   ipcMain.on('searchByName', (event, searchData) => {
     console.log(`searchByName was clicked: ${JSON.stringify(searchData)}`);
@@ -114,16 +133,6 @@ function createStudentsWindow(show_devTools = false) {
     });
     pdfWindow.loadFile(pdfOutputPath);
   }
-// // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// function createAndDisplayBadgeWindow () {
-//   const pdfWindow = new PDFWindow({
-//     width: 1200,
-//     height: 800,
-//     webPreferences: { }
-//   });
-//   pdfPath = appRoot + '/output/test_file2.pdf';
-//   pdfWindow.loadFile(pdfPath);
-// }
 
   return studentView;
 }  

@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 });
 
 //-------------------------------------------------------------------
-function initializeStudentCreate(response, status, xhr) {
+async function initializeStudentCreate(response, status, xhr) {
   console.log(`initializeStudentCreate - invoked: ${JSON.stringify(status)}`);
   document.getElementById('createButton').addEventListener('click',(event)=>{processCreateButton(event);});
   document.getElementById('selectCreatePicture').addEventListener('click',(event)=>{processSelectPictureCreate(event);});
@@ -33,14 +33,17 @@ window.electronAPI.selectPictureResult((result) => {
   createResultsMessage.classList.add('ms-2', 'fw-bold', 'text-success');  
 })
 
-// //-------------------------------------------------------------------
-// function processSavePictureCreate(event) {
-//   console.log(`processSavePictureCreate: ${clickCounter++} times.`);
-// }
-// // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
-// window.electronAPI.savePictureResult((result) => {
-//   console.log(`selectPictureResult was activated`);
-// })
+// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+window.electronAPI.navEventInvokedResult((result) => {
+  console.log(`navEventInvokedResult was activated`);
+  // get default image from 
+  if (result.navButtonId == "navCreate") {
+    ResetAllFields(result);
+  }
+  const imageBase64  = window.electronAPI.getDefaultImage();
+  studentPicture     = document.getElementById('studentCreatePicture');
+  studentPicture.src = `data:image/jpg;base64,${imageBase64.imageBase64}`;
+})
 
 //-------------------------------------------------------------------
 function processCreateButton(event) {
@@ -75,18 +78,77 @@ function DisplayCreateResults(result) {
   createResultsMessage.className = '';
   createResultsMessage.classList.add('ms-2');
   createResultsMessage.classList.add('fw-bold');
-  if (result.status == 'err') {
-    createResultsMessage.classList.add('text-danger');
+  if (result.overall.status == 'err') {
+    HighlightErrorFields(result);
   }
   else {
-    createResultsMessage.classList.add('text-success');
+    DisplaySuccessMessage(result);
   }
 }
 
+//-------------------------------------------------------------------
+function DisplaySuccessMessage(result) {
+  const createForm    = document.getElementById('frmCreate');
+  const createButtons = createForm.querySelector('#createButtons');
+  const saveButtons   = createForm.querySelector('#saveButtons');
+  createButtons.classList.add('iframe_hidden');
+  saveButtons.classList.remove('iframe_hidden');
+  createResultsMessage = document.getElementById('createResultsMessage');
+  createResultsMessage.innerHTML = "New student was added";
+  createResultsMessage.className = '';
+  createResultsMessage.classList.add('ms-2');
+  createResultsMessage.classList.add('fw-bold');
+  createResultsMessage.classList.add('text-success');
+}
+
+//-------------------------------------------------------------------
+function HighlightErrorFields(result) {
+  const allFields = GetAllCreateFields();
+  let firstError  = null;
+  for (let key in result) {
+    if (key != 'overall') {
+      const errField = allFields[key];
+      errField.classList.remove('is-invalid');
+      if (result[key].status == 'err') {
+        if (!firstError) {
+          errField.focus();
+          firstError = result[key];
+        }
+        errField.classList.add('is-invalid');
+      }
+    }
+  }
+  console.log(`firstError: ${firstError}`);
+  createResultsMessage.innerHTML = firstError.msg;
+  createResultsMessage.className = '';
+  createResultsMessage.classList.add('ms-2');
+  createResultsMessage.classList.add('fw-bold');
+  createResultsMessage.classList.add('text-danger');
+}
+
+//-------------------------------------------------------------------
+function ResetAllFields(result) {
+  console.log(`ResetAllFields was activated`);
+  const allFields = GetAllCreateFields();
+  allFields.badgeNumberLbl.innerHTML = "";
+  allFields.memberSinceLbl.innerHTML = "";
+  allFields.firstName.value   = "";
+  //allFields.middleName.value = studentData.middleName;
+  allFields.lastName.value     = "";
+  allFields.address.value      = "";
+  allFields.address2.value     = "";
+  allFields.city.value         = "";
+  allFields.state.value        = "";
+  allFields.zipCode.value      = "";
+  //allFields.birthDate.value    = "";
+  allFields.phoneHome.value    = "";
+  allFields.email.value        = "";
+  //allFields.studentPicture.src = `data:image/jpg;base64,${studentData.imageBase64}`;
+}  
 
 //-------------------------------------------------------------------
 function DisplayCreateStudentData(studentData) {
-  const allFields = GetAllFields();
+  const allFields = GetAllCreateFieldValues();
   allFields.badgeNumberLbl.innerHTML = studentData.badgeNumber;
   allFields.memberSinceLbl.innerHTML = studentData.memberSince;
   allFields.firstName.value = studentData.firstName;
@@ -118,6 +180,7 @@ function GetAllCreateFieldValues() {
     'birthDate' : createForm.querySelector('#inpBirthDate').value,
     'phoneHome' : createForm.querySelector('#inpPhoneHome').value,
     'email'     : createForm.querySelector('#inpEmail').value,    
+    'studentPicture': createForm.querySelector('#studentCreatePicture').value,
   }
 }
 

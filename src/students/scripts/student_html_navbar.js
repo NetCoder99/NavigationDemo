@@ -23,6 +23,7 @@ function processNavButton(event) {
   console.log(`processNavButton: ${JSON.stringify(event.target.id)} :: ${clickCounter++} times.`);
   hideAllPanels();
   ShowActivePanel(event.target.id);
+  window.electronAPI.navEventInvoked({'navButtonId' : event.target.id});
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -37,7 +38,6 @@ function ShowActivePanel(navButtonId) {
   if (navButtonId == 'navCreate') {
     document.getElementById('StudentCreateDiv').classList.remove('iframe_hidden');
   }
-
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
